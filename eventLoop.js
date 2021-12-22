@@ -1,37 +1,53 @@
-// const start = performance.now()
+// - инициализация
+// ## Фазы
+// nextTick, microtaskQueue
+// - timeouts
+// nextTick, microtaskQueue
+// - pending callbacks
+// nextTick, microtaskQueue
+// - idle, prepare
+// nextTick, microtaskQueue
+// -poll (I/O)
+// nextTick, microtaskQueue
+// -check (setImmediate)
+// nextTick, microtaskQueue
+// - close callback (emitter.on('close', () => {}))
 
-// setTimeout(() => {
-//   console.log(performance.now() - start)
-//   console.log('Delay 1 sec')
-// }, 1000)
+// check on ending
 
-// function myF(arg) {
-//   console.log(`Arg: ${arg}`)
-// }
+const fs = require('fs')
 
-// setTimeout(myF, 1000, 'arg1')
+console.log('Init')
 
-// const timeoutId = setTimeout(() => console.log('Boom!'), 5000)
+setTimeout(() => {
+  console.log('Timer 0', performance.now())
+}, 100)
 
-// setTimeout(() => {
-//   clearTimeout(timeoutId)
-//   console.log('Clear!')
-// }, 1000)
+setImmediate(() => {
+  console.log('Immediate')
+})
 
-// const intervalId = setInterval(() => console.log(performance.now()), 1000)
+fs.readFile(__filename, () => {
+  console.log('File read')
+})
 
-// setTimeout(() => {
-//   clearInterval(intervalId)
-//   console.log('Clear!')
-// }, 5500)
-console.log('Before')
+setTimeout(() => {
+  for (let i = 0; i < 1000000000; i++) {}
+  console.log('Done')
+  Promise.resolve().then(() => {
+    console.log('Promise inside Timeout')
+  })
+  process.nextTick(() => {
+    console.log('NextTick inside Timeout')
+  })
+}, 0)
 
-setImmediate(() => console.log('After Everything'))
+Promise.resolve().then(() => {
+  console.log('Promise')
+})
 
-console.log('After')
+process.nextTick(() => {
+  console.log('NextTick')
+})
 
-const timeoutId = setTimeout(() => console.log('Boom!'), 2000)
-
-timeoutId.unref()
-
-setImmediate(() => timeoutId.ref())
+console.log('Final')
