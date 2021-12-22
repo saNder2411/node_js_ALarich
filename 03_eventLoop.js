@@ -23,6 +23,10 @@ setTimeout(() => {
   console.log('Timer 0', performance.now())
 }, 100)
 
+setTimeout(() => {
+  console.log('Timer 1', performance.now())
+}, 100)
+
 setImmediate(() => {
   console.log('Immediate')
 })
